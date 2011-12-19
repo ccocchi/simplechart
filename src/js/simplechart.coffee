@@ -15,18 +15,21 @@ class Series
     @chart = chart
 
 
-Chart = (options, callback) ->
-  @optionsChart = options.chart
-  idCounter = 0
+class Chart
 
-  getContainer: () ->
-    renderTo = optionsChart.renderTo
-    containerId = "simplechart-#{idCounter++}"
+  constructor: (@options, @callback) ->
+    @optionsChart = @options.chart
+    @idCounter = 0
+    this.render()
+
+  getContainer: ->
+    renderTo = @optionsChart.renderTo
+    containerId = "simplechart-#{@idCounter++}"
 
     @renderTo = $(renderTo) if typeof(renderTo) is 'string'
     @renderTo.innerHTML = ''
 
-    getChartSize()
+    this.getChartSize()
 
     @container = $('<div />', {
       id: containerId,
@@ -41,14 +44,14 @@ Chart = (options, callback) ->
 
     @container.appendTo(renderTo)
 
-  getChartSize: () ->
+  getChartSize: ->
     containerWidth = @renderTo.offsetWidth
     containerHeight = @renderTo.offsetHeight
-    @chartWidth ||= optionsChart.width || containerWidth || 600
-    @chartHeight ||= chartHeight = optionsChart.height || 400
+    @chartWidth ||= @optionsChart.width || containerWidth || 600
+    @chartHeight ||= @optionsChart.height || containerHeight || 400
 
-  render: () ->
-    getContainer()
+  render: ->
+    this.getContainer()
     #resetMargins()
     #setChartSize()
 
@@ -67,7 +70,9 @@ Chart = (options, callback) ->
     #true
     # callback.apply(chart, [chart]) if callback
 
-  @options = options
-  render()
+ExternalChart = (options, callback) ->
+  new Chart(options, callback)
 
-
+window.Simplechart = {
+  Chart: ExternalChart
+}
