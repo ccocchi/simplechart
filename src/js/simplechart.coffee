@@ -10,19 +10,28 @@ addEvent: (el, event, fn) ->
   $(el).bind(event, fn)
 
 class Point
+  # A point object containing coordinates
+  #
+  # series - Instance of series
+  # data - Double values array
+  constructor: (@series, @data) ->
+    this.parseData()
+    @series.chart.pointsCount++
 
-  constructor: (@series, @options) ->
-
+  # Set x and y coordinates from data values
+  parseData: ->
+    @x = @data[0]
+    @y = @data[1]
 
 class Series
-  # A series in a collection of points corresponding to the
+  # A series is a collection of points corresponding to the
   # data passed in series' options
   #
   # chart - An instance of chart
   # options - Series' options
   constructor: (@chart, @options={}) ->
     this.getColor()
-    @points = this.setData(@options.data)
+    this.setData(@options.data)
 
   # Get the series' color from chart options
   getColor: ->
@@ -33,9 +42,9 @@ class Series
   # Return an array of point corresponding to the data passed
   # in the options
   #
-  # data - An array of value
+  # data - An array of values ([[1, 2], [3, 4]])
   setData: (data) ->
-    new Point(d) for d in data
+    @point.push(new Point(this, d)) for d in data
     # series.cleanData();
 		# series.getSegments();
 		# series.getAttribs();
@@ -49,6 +58,7 @@ class Chart
     @optionsChart = @options.chart
     @idCounter = 0
     @colorCounters = 0
+    @pointsCount = 0
     this.render()
 
   # Get the container, determine the size and create the inner div
@@ -82,16 +92,14 @@ class Chart
     @chartWidth ||= @optionsChart.width || containerWidth || 600
     @chartHeight ||= @optionsChart.height || containerHeight || 400
 
-  loadSerie: (serie) ->
-    @series.push(new Series(this, serie))
-
   render: ->
     this.getContainer()
     #resetMargins()
     #setChartSize()
 
-    loadSerie(serie) for serie of options.series
+    @series.push(new Series(this, serie)) for serie of options.series
 
+    true
     #getAxes()
 
     # Do render
