@@ -9,6 +9,16 @@ $ = jQuery if window.jQuery
 addEvent: (el, event, fn) ->
   $(el).bind(event, fn)
 
+class Axis
+  # An axis from a chart
+  #
+  # options - Hash of axis options
+  constructor: (options) ->
+    @title = options.title
+    @type = options.type || 'linear'
+    @color = options.color || 'c0d0e0'
+    @lineColor = options.lineColor || '#c0c0c0'
+
 class Point
   # A point object containing coordinates
   #
@@ -44,7 +54,7 @@ class Series
   #
   # data - An array of values ([[1, 2], [3, 4]])
   setData: (data) ->
-    @point.push(new Point(this, d)) for d in data
+    @points.push(new Point(this, d)) for d in data
     # series.cleanData();
 		# series.getSegments();
 		# series.getAttribs();
@@ -92,15 +102,21 @@ class Chart
     @chartWidth ||= @optionsChart.width || containerWidth || 600
     @chartHeight ||= @optionsChart.height || containerHeight || 400
 
+  # Create axes instance based on the options
+  getAxes: ->
+    @axes.push(new Axis(axisOptions)) for axisOptions in [@options.xAxis, @options.yAxis]
+
+  # Prepare rendering after series are loaded
   render: ->
     this.getContainer()
     #resetMargins()
     #setChartSize()
 
-    @series.push(new Series(this, serie)) for serie of options.series
+    @series.push(new Series(this, serie)) for serie of @options.series
+
+    this.getAxes()
 
     true
-    #getAxes()
 
     # Do render
     #setTitle()
